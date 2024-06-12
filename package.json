@@ -1,0 +1,55 @@
+{
+  "name": "@sicamois/use-upload-to-s3",
+  "private": false,
+  "license": "MIT",
+  "type": "module",
+  "exports": "./src/mod.ts",
+  "main": "dist/use-upload-to-s3.js",
+  "types": "dist/mod.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "lint": "eslint --report-unused-disable-directives --max-warnings 0 .",
+    "preview": "vite preview",
+    "prepublishOnly": "bun run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sicamois/use-upload-to-s3"
+  },
+  "peerDependencies": {
+    "@aws-sdk/client-s3": "^3",
+    "@aws-sdk/s3-request-presigner": "^3",
+    "react": "^19.0.0-rc-6230622a1a-20240610",
+    "react-dom": "^19.0.0-rc-6230622a1a-20240610"
+  },
+  "devDependencies": {
+    "@aws-sdk/client-s3": "^3",
+    "@aws-sdk/s3-request-presigner": "^3",
+    "@eslint/js": "^9.4.0",
+    "@types/eslint__js": "^8.42.3",
+    "@types/node": "^20",
+    "@types/react": "npm:types-react@rc",
+    "@types/react-dom": "npm:types-react-dom@rc",
+    "@vitejs/plugin-react": "^4",
+    "babel-plugin-react-compiler": "^0.0.0-experimental-938cd9a-20240601",
+    "eslint": "^9.4.0",
+    "eslint-plugin-react-compiler": "^0.0.0-experimental-51a85ea-20240601",
+    "eslint-plugin-react-hooks": "^4",
+    "eslint-plugin-react-refresh": "^0",
+    "react": "^19.0.0-rc-6230622a1a-20240610",
+    "react-dom": "^19.0.0-rc-6230622a1a-20240610",
+    "rollup-plugin-preserve-directives": "^0",
+    "typescript": "^5.4.5",
+    "typescript-eslint": "^7.13.0",
+    "vite": "^5",
+    "vite-plugin-dts": "^3"
+  },
+  "overrides": {
+    "@types/react": "npm:types-react@rc",
+    "@types/react-dom": "npm:types-react-dom@rc"
+  }
+}

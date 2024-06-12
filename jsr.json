@@ -1,0 +1,9 @@
+{
+  "name": "@sicamois/use-upload-to-s3",
+  "version": "0.1.0",
+  "exports": "./src/mod.ts",
+  "publish": {
+    "include": ["LICENSE", "README.md", "lib/**/*.ts"],
+    "exclude": ["src/vite-env.d.ts"]
+  }
+}
