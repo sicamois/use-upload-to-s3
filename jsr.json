@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "exports": "./src/mod.ts",
   "publish": {
-    "include": ["LICENSE", "README.md", "lib/**/*.ts"],
+    "include": ["LICENSE", "README.md", "src/**/*.ts"],
     "exclude": ["src/vite-env.d.ts"]
   }
 }
