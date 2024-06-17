@@ -21,7 +21,7 @@ npx jsr add @dapofactory/react-hook-upload-to-s3
   "Statement": [
     {
       "Effect": "Allow",
-      "Action": "s3:PutObject",
+      "Action": ["s3:PutObject", "s3:GetObject"],
       "Resource": "arn:aws:s3:::YOUR_BUCKET_NAME/*"
     }
   ]
