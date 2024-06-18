@@ -43,8 +43,7 @@ npx jsr add @dapofactory/react-hook-upload-to-s3
 ]
 ```
 
-> [!TIP]
-> You can restrain the `AllowedOrigins` to your domain for greater security.
+> [!WARNING] > `"AllowedOrigins": ["*"]` is necessary if you don't know the origin of the request (like in this case). If you know the origin, you should replace `*` with the origin.
 
 ### Add Environment Variables
 
