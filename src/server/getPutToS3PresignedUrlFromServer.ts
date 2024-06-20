@@ -28,7 +28,19 @@ export async function getPutToS3PresignedUrlFromServer(
   bucketName: string,
   region: string
 ) {
-  const s3Client = new S3Client({ region });
+  const s3Client = new S3Client({
+    region,
+    credentials: {
+      accessKeyId:
+        process.env.AWS_ACCESS_KEY_ID ||
+        import.meta.env.AWS_ACCESS_KEY_ID ||
+        '',
+      secretAccessKey:
+        process.env.AWS_SECRET_ACCESS_KEY ||
+        import.meta.env.AWS_SECRET_ACCESS_KEY ||
+        '',
+    },
+  });
 
   const putCommand = new PutObjectCommand({
     Bucket: bucketName,
