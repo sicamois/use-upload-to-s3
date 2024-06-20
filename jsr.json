@@ -1,6 +1,6 @@
 {
   "name": "@sicamois/use-upload-to-s3",
-  "version": "1.0.5",
+  "version": "1.0.3",
   "exports": "./src/mod.ts",
   "publish": {
     "include": ["LICENSE", "README.md", "src/**/*.ts"],
