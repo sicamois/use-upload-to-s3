@@ -28,19 +28,33 @@ export async function getPutToS3PresignedUrlFromServer(
   bucketName: string,
   region: string
 ) {
-  const s3Client = new S3Client({
-    region,
-    credentials: {
-      accessKeyId:
-        process.env.AWS_ACCESS_KEY_ID ||
-        import.meta.env.AWS_ACCESS_KEY_ID ||
-        '',
-      secretAccessKey:
-        process.env.AWS_SECRET_ACCESS_KEY ||
-        import.meta.env.AWS_SECRET_ACCESS_KEY ||
-        '',
-    },
-  });
+  let s3Client = new S3Client();
+
+  try {
+    // Try to get the credentials from process.env (typically for Next.js)
+    s3Client = new S3Client({
+      region,
+      credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+      },
+    });
+  } catch (error) {
+    try {
+      // Try to get the credentials from the environment variables (typically for Node.js)
+      s3Client = new S3Client({
+        region,
+        credentials: {
+          accessKeyId: import.meta.env.AWS_ACCESS_KEY_ID,
+          secretAccessKey: import.meta.env.AWS_SECRET_ACCESS_KEY,
+        },
+      });
+    } catch (error) {
+      console.error(
+        'No AWS credentials found in process.env or import.meta.env'
+      );
+    }
+  }
 
   const putCommand = new PutObjectCommand({
     Bucket: bucketName,
