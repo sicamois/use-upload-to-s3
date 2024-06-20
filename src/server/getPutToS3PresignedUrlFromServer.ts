@@ -32,21 +32,27 @@ export async function getPutToS3PresignedUrlFromServer(
 
   try {
     // Try to get the credentials from process.env (typically for Next.js)
+    const accessKeyId = process.env.AWS_ACCESS_KEY_ID!;
+    const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY!;
+
     s3Client = new S3Client({
       region,
       credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+        accessKeyId,
+        secretAccessKey,
       },
     });
   } catch (error) {
     try {
       // Try to get the credentials from the environment variables (typically for Node.js)
+      const accessKeyId = import.meta.env.AWS_ACCESS_KEY_ID;
+      const secretAccessKey = import.meta.env.AWS_SECRET_ACCESS_KEY;
+
       s3Client = new S3Client({
         region,
         credentials: {
-          accessKeyId: import.meta.env.AWS_ACCESS_KEY_ID,
-          secretAccessKey: import.meta.env.AWS_SECRET_ACCESS_KEY,
+          accessKeyId,
+          secretAccessKey,
         },
       });
     } catch (error) {
