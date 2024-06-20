@@ -59,7 +59,7 @@ AWS_SECRET_ACCESS_KEY=<YOUR_SECRET_ACCESS_KEY>
 ```jsx
 'use client';
 
-import { useUploadToS3 } from '@dapofactory/react-hook-upload-to-s3';
+import { useUploadToS3 } from '@sicamois/use-upload-to-s3';
 
 export default function UploadFile() {
   const [handleInputChange, s3key, isPending, error] = useUploadToS3(
