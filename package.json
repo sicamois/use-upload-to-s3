@@ -4,7 +4,7 @@
   "license": "MIT",
   "type": "module",
   "exports": "./src/mod.ts",
-  "main": "dist/use-upload-to-s3.js",
+  "main": "dist/mod.js",
   "types": "dist/mod.d.ts",
   "files": [
     "dist"
