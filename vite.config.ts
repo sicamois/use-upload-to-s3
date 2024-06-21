@@ -24,6 +24,7 @@ export default defineConfig({
     lib: {
       entry: resolve(__dirname, 'src/mod.ts'),
       formats: ['es'],
+      name: 'useUploadToS3',
     },
     rollupOptions: {
       external: [
