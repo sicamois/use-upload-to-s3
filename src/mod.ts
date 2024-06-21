@@ -1,1 +1,1 @@
-export * from './client/useUploadToS3';
+export * from './client/useUploadToS3.js';

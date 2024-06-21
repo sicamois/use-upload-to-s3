@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { getPutToS3PresignedUrlFromServer } from '../server/getPutToS3PresignedUrlFromServer';
+import { getPutToS3PresignedUrlFromServer } from '../server/getPutToS3PresignedUrlFromServer.js';
 
 function returnFileSize(number: number) {
   if (number < 1024) {
@@ -61,7 +61,7 @@ export function useUploadToS3(
 
     const acceptedFiletypes = accept.split(',');
     for (let i = 0; i < acceptedFiletypes.length; i++) {
-      acceptedFiletypes[i] = acceptedFiletypes[i].trim();
+      acceptedFiletypes[i] = acceptedFiletypes[i]!.trim();
     }
     const passAcceptation = acceptedFiletypes.reduce(
       (acc, acceptedFiletype) => {
