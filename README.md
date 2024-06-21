@@ -5,6 +5,12 @@ A simple react hook `useUploadToS3` that levrage React Server Component to secur
 ## Installation
 
 ```bash
+npm i @sicamois/use-upload-to-s3
+```
+
+or if you want to sintall it from jsr
+
+```bash
 npx jsr add @dapofactory/react-hook-upload-to-s3
 ```
 
