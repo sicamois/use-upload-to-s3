@@ -52,5 +52,5 @@
     "@types/react": "npm:types-react@rc",
     "@types/react-dom": "npm:types-react-dom@rc"
   },
-  "version": "0.0.5"
+  "version": "0.0.6"
 }
