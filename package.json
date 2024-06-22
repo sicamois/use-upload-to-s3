@@ -1,5 +1,6 @@
 {
   "name": "@sicamois/use-upload-to-s3",
+  "version": "0.0.9",
   "private": false,
   "license": "MIT",
   "type": "module",
@@ -22,6 +23,7 @@
   "peerDependencies": {
     "@aws-sdk/client-s3": "^3",
     "@aws-sdk/s3-request-presigner": "^3",
+    "dotenv": "^16",
     "react": "^19.0.0-rc-6230622a1a-20240610",
     "react-dom": "^19.0.0-rc-6230622a1a-20240610"
   },
@@ -50,6 +52,5 @@
   "overrides": {
     "@types/react": "npm:types-react@rc",
     "@types/react-dom": "npm:types-react-dom@rc"
-  },
-  "version": "0.0.9"
+  }
 }

@@ -32,6 +32,7 @@ export default defineConfig({
         'react/jsx-runtime',
         '@aws-sdk/client-s3',
         '@aws-sdk/s3-request-presigner',
+        'dotenv',
       ],
       output: {
         preserveModules: true,
