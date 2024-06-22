@@ -23,9 +23,8 @@
   "peerDependencies": {
     "@aws-sdk/client-s3": "^3",
     "@aws-sdk/s3-request-presigner": "^3",
-    "dotenv": "^16",
-    "react": "^19.0.0-rc-6230622a1a-20240610",
-    "react-dom": "^19.0.0-rc-6230622a1a-20240610"
+    "react": "19.0.0-rc-6230622a1a-20240610",
+    "react-dom": "19.0.0-rc-6230622a1a-20240610"
   },
   "devDependencies": {
     "@aws-sdk/client-s3": "^3",
@@ -41,8 +40,8 @@
     "eslint-plugin-react-compiler": "^0.0.0-experimental-51a85ea-20240601",
     "eslint-plugin-react-hooks": "^4",
     "eslint-plugin-react-refresh": "^0",
-    "react": "^19.0.0-rc-6230622a1a-20240610",
-    "react-dom": "^19.0.0-rc-6230622a1a-20240610",
+    "react": "19.0.0-rc-6230622a1a-20240610",
+    "react-dom": "19.0.0-rc-6230622a1a-20240610",
     "rollup-plugin-preserve-directives": "^0",
     "typescript": "^5.4.5",
     "typescript-eslint": "^7.13.0",
