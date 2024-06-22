@@ -3,7 +3,6 @@
   "private": false,
   "license": "MIT",
   "type": "module",
-  "exports": "./src/mod.ts",
   "main": "./dist/mod.js",
   "types": "./dist/mod.d.ts",
   "files": [
