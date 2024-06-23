@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import { getPutToS3PresignedUrlFromServer } from '../server/getPutToS3PresignedUrlFromServer.js';
 
 function returnFileSize(number: number) {
@@ -49,9 +49,10 @@ export function useUploadToS3(
   Error | null
 ] {
   const { accept = '*/*', sizeLimit = 1_048_576 } = options;
-  const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [s3key, setS3key] = useState<string | undefined>(undefined);
+
+  const [isPending, startTransition] = useTransition();
 
   const handleInputChange = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -59,7 +60,6 @@ export function useUploadToS3(
     const file = event.target.files?.[0];
     if (!file) return;
 
-    setIsPending(true);
     const acceptedFiletypes = accept.split(',');
     for (let i = 0; i < acceptedFiletypes.length; i++) {
       acceptedFiletypes[i] = acceptedFiletypes[i]!.trim();
@@ -81,13 +81,11 @@ export function useUploadToS3(
     );
 
     if (!passAcceptation) {
-      setIsPending(false);
       setError(new Error(`Only ${accept} files are accepted`));
       return;
     }
 
     if (file.size > sizeLimit) {
-      setIsPending(false);
       setError(
         new Error(
           `File "${file.name}" is too big - max ${returnFileSize(
@@ -101,33 +99,33 @@ export function useUploadToS3(
     setError(null);
     setS3key(undefined);
 
-    try {
-      const uploadUrl = await getPutToS3PresignedUrlFromServer(
-        file,
-        bucket,
-        region
-      );
-      const response = await fetch(uploadUrl, {
-        method: 'PUT',
-        body: file,
-      });
-
-      if (!response.ok) {
-        throw new Error(
-          `Failed to upload file to S3: ${response.status} ${response.statusText}`
+    startTransition(async () => {
+      try {
+        const uploadUrl = await getPutToS3PresignedUrlFromServer(
+          file,
+          bucket,
+          region
         );
-      }
+        const response = await fetch(uploadUrl, {
+          method: 'PUT',
+          body: file,
+        });
 
-      setS3key(file.name);
-      if (options.onUploadCompleteClient) {
-        options.onUploadCompleteClient(file.name);
+        if (!response.ok) {
+          throw new Error(
+            `Failed to upload file to S3: ${response.status} ${response.statusText}`
+          );
+        }
+
+        setS3key(file.name);
+        if (options.onUploadCompleteClient) {
+          options.onUploadCompleteClient(file.name);
+        }
+      } catch (error) {
+        console.error(error);
+        setError(error as Error);
       }
-    } catch (error) {
-      console.error(error);
-      setError(error as Error);
-    } finally {
-      setIsPending(false);
-    }
+    });
   };
 
   return [handleInputChange, s3key, isPending, error] as [
