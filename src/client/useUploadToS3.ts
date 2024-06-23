@@ -42,6 +42,7 @@ export function useUploadToS3(
     sizeLimit?: number;
     onUploadStart?: () => void;
     onUploadComplete?: (s3key: string) => void;
+    onUploadCompleteServerAction?: (s3key: string) => Promise<void>;
   } = {}
 ): [
   (event: React.ChangeEvent<HTMLInputElement>) => void,
@@ -124,6 +125,9 @@ export function useUploadToS3(
         setS3key(file.name);
         if (options.onUploadComplete) {
           options.onUploadComplete(file.name);
+        }
+        if (options.onUploadCompleteServerAction) {
+          await options.onUploadCompleteServerAction(file.name);
         }
       } catch (error) {
         console.error(error);
