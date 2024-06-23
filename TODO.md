@@ -1,6 +1,6 @@
 # TODO
 
-- [ ] Add a onUploadCompleteClient
+- [x] Add a onUploadCompleteClient
 - [ ] Add bytes package to convert bytes to human readable → [bytes.js](https://github.com/visionmedia/bytes.js)
 - [ ] Set CORS configuration automagically (with a `useUploadToS3` hook)
 - [ ] Change IAM policy to allow for CORS configuration
