@@ -40,8 +40,8 @@ export function useUploadToS3(
   options: {
     accept?: string;
     sizeLimit?: number;
-    onUploadStartClient?: () => void;
-    onUploadCompleteClient?: (s3key: string) => void;
+    onUploadStart?: () => void;
+    onUploadComplete?: (s3key: string) => void;
   } = {}
 ): [
   (event: React.ChangeEvent<HTMLInputElement>) => void,
@@ -102,8 +102,8 @@ export function useUploadToS3(
 
     startTransition(async () => {
       try {
-        if (options.onUploadStartClient) {
-          options.onUploadStartClient();
+        if (options.onUploadStart) {
+          options.onUploadStart();
         }
         const uploadUrl = await getPutToS3PresignedUrlFromServer(
           file,
@@ -122,8 +122,8 @@ export function useUploadToS3(
         }
 
         setS3key(file.name);
-        if (options.onUploadCompleteClient) {
-          options.onUploadCompleteClient(file.name);
+        if (options.onUploadComplete) {
+          options.onUploadComplete(file.name);
         }
       } catch (error) {
         console.error(error);
