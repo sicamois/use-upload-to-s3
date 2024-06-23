@@ -40,6 +40,7 @@ export function useUploadToS3(
   options: {
     accept?: string;
     sizeLimit?: number;
+    onUploadStartClient?: () => void;
     onUploadCompleteClient?: (s3key: string) => void;
   } = {}
 ): [
@@ -101,6 +102,9 @@ export function useUploadToS3(
 
     startTransition(async () => {
       try {
+        if (options.onUploadStartClient) {
+          options.onUploadStartClient();
+        }
         const uploadUrl = await getPutToS3PresignedUrlFromServer(
           file,
           bucket,
