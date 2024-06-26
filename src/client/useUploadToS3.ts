@@ -2,20 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { getPutToS3PresignedUrlFromServer } from '../server/getPutToS3PresignedUrlFromServer.js';
-
-function returnFileSize(number: number) {
-  if (number < 1024) {
-    return `${number} bytes`;
-  } else if (number >= 1024 && number < 1048576) {
-    return `${(number / 1024).toFixed(1)} KB`;
-  } else if (number >= 1048576) {
-    return `${(number / 1048576).toFixed(1)} MB`;
-  }
-}
-
-// WARNING : Server Actions have a default size limit of 1MB
-// To change that you have to set it in the next.config.js (or next.config.mjs) file
-// see https://nextjs.org/docs/app/api-reference/next-config-js/serverActions#bodysizelimit
+import { format, parse } from 'bytes';
 
 /**
  * Upload a file to a private S3 bucket from the client using a presigned URL.
@@ -25,21 +12,31 @@ function returnFileSize(number: number) {
  * @param options Options for the upload
  * @param options.accept The file types to accept, defaults to all files
  * @param options.sizeLimit The maximum file size in bytes, defaults to 1MB
+ * @param options.onUploadStart A function to be called when the upload starts
+ * @param options.onUploadComplete A function to be called when the upload completes
  * @returns A tuple containing the file input change handler, the S3 key of the uploaded file, a boolean indicating if the upload is pending, and an error if the upload failed
+
  * @example
  * ```tsx
  * const [handleInputChange, s3key, isPending, error] = useUploadToS3('my-bucket', 'us-east-1', {
  *  accept: 'image/*',
- *  sizeLimit: 5_242_880,
+ *  sizeLimit: '5MB',
+ *  onUploadStart: () => console.log('Upload started'),
+ *  onUploadComplete: (s3key) => console.log(`Upload complete - s3key: ${s3key}`),
  * });
  * ```
+ * 
+ * Warning: Server Actions have a default size limit of 1MB
+ * To change that you have to set it in the next.config.js (or next.config.mjs) file
+ * see https://nextjs.org/docs/app/api-reference/next-config-js/serverActions#bodysizelimit
  */
+
 export function useUploadToS3(
   bucket: string,
   region: string,
   options: {
     accept?: string;
-    sizeLimit?: number;
+    sizeLimit?: string;
     onUploadStart?: () => void;
     onUploadComplete?: (s3key: string) => void;
   } = {}
@@ -49,7 +46,7 @@ export function useUploadToS3(
   boolean,
   Error | null
 ] {
-  const { accept = '*/*', sizeLimit = 1_048_576 } = options;
+  const { accept = '*/*', sizeLimit = '1MB' } = options;
   const [error, setError] = useState<Error | null>(null);
   const [s3key, setS3key] = useState<string | undefined>(undefined);
 
@@ -86,12 +83,12 @@ export function useUploadToS3(
       return;
     }
 
-    if (file.size > sizeLimit) {
+    if (file.size > parse(sizeLimit)) {
       setError(
         new Error(
-          `File "${file.name}" is too big - max ${returnFileSize(
-            sizeLimit
-          )} allowed`
+          `File "${file.name}" is too big (${format(
+            file.size
+          )}) - max ${sizeLimit} allowed`
         )
       );
       return;
