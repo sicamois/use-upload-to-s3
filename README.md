@@ -118,7 +118,7 @@ The maximum file size in bytes, defaults to 1MB.
 
 #### `onUploadComplete: (s3key: string) => void`
 
-A function to be called when the upload completes.
+A callback function to be executed when the upload completes.
 
 > [!NOTE]
 >
@@ -176,5 +176,5 @@ export default function UploadFile() {
 - Makes everything that needs to be done on the server (using secrets, etc) to be done... on the server side !
 - The upload is done from the client, so the file never touches the server.
   - Circumvent the limitation on **Vercel** serverless functions to 4.5MB upload size.
-- The hook is built with React Server Components, so it's generate a very small overhead in the bundle size on the client.
+- The hook is built with React Server Components, so it's generate a very small overhead in the bundle size on the client (~3KB).
 - It removes the need to make your S3 bucket public, and thus remove the need for a trade-off between security and convenience.
