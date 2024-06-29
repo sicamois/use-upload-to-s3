@@ -124,7 +124,7 @@ A function to be called when the upload completes.
 >
 > It is called with the S3 key of the uploaded file and the file itself.
 >
-> **NB:** You can call a **server action** to do something with the key on the server, like adding it to a database.
+> 💡 You can call a **server action** to do something with the key on the server, like adding it to a database.
 
 ### Example with `options`
 
