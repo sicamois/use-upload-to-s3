@@ -99,7 +99,44 @@ The maximum file size in bytes, defaults to 1MB.
 > [!WARNING]
 > Server Actions have a default size limit of 1MB.  
 > To change that you have to set it in the next.config.js (or next.config.mjs) file.  
-> see https://nextjs.org/docs/app/api-reference/next-config-js/serverActions#bodysizelimit
+> see <https://nextjs.org/docs/app/api-reference/next-config-js/serverActions#bodysizelimit>
+
+### `onUploadComplete`
+
+A function to be called when the upload completes.
+
+> [!NOTE]
+>
+> It is called with the S3 key of the uploaded file.
+
+### Exemple with options
+
+```jsx
+'use client';
+
+import { useUploadToS3 } from '@sicamois/use-upload-to-s3';
+
+export default function UploadFile() {
+  const [handleInputChange, s3key, isPending, error] = useUploadToS3(
+    'YOUR_BUCKET_NAME',
+    {
+      accept: 'image/*',
+      sizeLimit: '5MB',
+      onUploadComplete: (s3key) =>
+        console.log(`Upload complete - s3key: ${s3key}`),
+    }
+  );
+
+  return (
+    <div>
+      <input type='file' onChange={handleInputChange} />
+      <p>s3key: {s3key}</p>
+      {isPending ? <p>Uploading...</p> : null}
+      {error ? <p>Error: {error.message}</p> : null}
+    </div>
+  );
+}
+```
 
 ## Motivations
 
