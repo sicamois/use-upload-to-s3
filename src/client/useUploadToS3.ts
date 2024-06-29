@@ -45,7 +45,7 @@ export function useUploadToS3(
   options: {
     accept?: string;
     sizeLimit?: string;
-    onUploadComplete?: (s3key: string) => void;
+    onUploadComplete?: (s3key: string, file: File) => void;
   } = {}
 ): [
   (event: React.ChangeEvent<HTMLInputElement>) => void,
@@ -121,7 +121,7 @@ export function useUploadToS3(
         await removeTmpCors(bucket);
         setS3key(key);
         if (options.onUploadComplete) {
-          options.onUploadComplete(key);
+          options.onUploadComplete(key, file);
         }
       } catch (error) {
         console.error(error);
