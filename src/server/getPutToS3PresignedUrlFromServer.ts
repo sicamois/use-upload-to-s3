@@ -1,48 +1,80 @@
 'use server';
 
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import {
+  DeleteBucketCorsCommand,
+  GetBucketCorsCommand,
+  PutBucketCorsCommand,
+  PutObjectCommand,
+  S3Client,
+  type CORSRule,
+} from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
-// S3 Bucket must have CORS configuration to allow PUT requests from the client
-// In the S3 console, go to the bucket, Permissions tab, CORS configuration
-//
-// Example working CORS configuration:
-// [
-//   {
-//       "AllowedHeaders": [
-//           "*"
-//       ],
-//       "AllowedMethods": [
-//           "PUT"
-//       ],
-//       "AllowedOrigins": [
-//           "*"
-//       ],
-//       "ExposeHeaders": [],
-//       "MaxAgeSeconds": 3000
-//   }
-// ]
+const accessKeyId = process.env.AWS_ACCESS_KEY_ID!;
+const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY!;
+const region = process.env.AWS_REGION!;
+
+const s3Client = new S3Client({
+  credentials: {
+    accessKeyId,
+    secretAccessKey,
+  },
+  region,
+});
+
+let initialCORSRules: CORSRule[] | undefined = undefined;
 
 export async function getPutToS3PresignedUrlFromServer(
-  file: File,
-  bucketName: string,
-  region: string
+  key: string,
+  bucketName: string
 ) {
-  const accessKeyId = process.env.AWS_ACCESS_KEY_ID!;
-  const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY!;
-
-  const s3Client = new S3Client({
-    region,
-    credentials: {
-      accessKeyId,
-      secretAccessKey,
+  const getInitialCorsConfigurationCommand = new GetBucketCorsCommand({
+    Bucket: bucketName,
+  });
+  try {
+    const response = await s3Client.send(getInitialCorsConfigurationCommand);
+    initialCORSRules = response.CORSRules;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (error) {
+    /* empty */
+  }
+  const putTmpCorsCommand = new PutBucketCorsCommand({
+    Bucket: bucketName,
+    CORSConfiguration: {
+      CORSRules: [
+        {
+          AllowedHeaders: ['*'],
+          AllowedMethods: ['PUT'],
+          AllowedOrigins: ['*'],
+          ExposeHeaders: [],
+          MaxAgeSeconds: 3000,
+        },
+      ],
     },
   });
+  await s3Client.send(putTmpCorsCommand);
 
   const putCommand = new PutObjectCommand({
     Bucket: bucketName,
-    Key: file.name,
+    Key: key,
   });
   // The URL will expire in 10 seconds. You can specify a different expiration time.
   return await getSignedUrl(s3Client, putCommand, { expiresIn: 10 });
+}
+
+export async function removeTmpCors(bucketName: string) {
+  if (!initialCORSRules) {
+    const command = new DeleteBucketCorsCommand({
+      Bucket: bucketName,
+    });
+    await s3Client.send(command);
+  } else {
+    const command = new PutBucketCorsCommand({
+      Bucket: bucketName,
+      CORSConfiguration: {
+        CORSRules: initialCORSRules,
+      },
+    });
+    await s3Client.send(command);
+  }
 }

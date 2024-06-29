@@ -1,8 +1,18 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { getPutToS3PresignedUrlFromServer } from '../server/getPutToS3PresignedUrlFromServer.js';
+import {
+  getPutToS3PresignedUrlFromServer,
+  removeTmpCors,
+} from '../server/getPutToS3PresignedUrlFromServer';
 import { format, parse } from 'bytes';
+import { nanoid } from 'nanoid';
+
+const generateUniqueFileName = (originalName: string): string => {
+  const nameWithoutExtension = originalName.replace(/\.[^/.]+$/, '');
+  const extension = originalName.split('.').pop();
+  return `${nanoid()}-${nameWithoutExtension}.${extension}`;
+};
 
 /**
  * Upload a file to a private S3 bucket from the client using a presigned URL.
@@ -33,7 +43,6 @@ import { format, parse } from 'bytes';
 
 export function useUploadToS3(
   bucket: string,
-  region: string,
   options: {
     accept?: string;
     sizeLimit?: string;
@@ -44,7 +53,7 @@ export function useUploadToS3(
   (event: React.ChangeEvent<HTMLInputElement>) => void,
   string | undefined,
   boolean,
-  Error | null
+  Error | null,
 ] {
   const { accept = '*/*', sizeLimit = '1MB' } = options;
   const [error, setError] = useState<Error | null>(null);
@@ -98,15 +107,12 @@ export function useUploadToS3(
     setS3key(undefined);
 
     startTransition(async () => {
+      const key = generateUniqueFileName(file.name);
       try {
         if (options.onUploadStart) {
           options.onUploadStart();
         }
-        const uploadUrl = await getPutToS3PresignedUrlFromServer(
-          file,
-          bucket,
-          region
-        );
+        const uploadUrl = await getPutToS3PresignedUrlFromServer(key, bucket);
         const response = await fetch(uploadUrl, {
           method: 'PUT',
           body: file,
@@ -117,10 +123,10 @@ export function useUploadToS3(
             `Failed to upload file to S3: ${response.status} ${response.statusText}`
           );
         }
-
-        setS3key(file.name);
+        await removeTmpCors(bucket);
+        setS3key(key);
         if (options.onUploadComplete) {
-          options.onUploadComplete(file.name);
+          options.onUploadComplete(key);
         }
       } catch (error) {
         console.error(error);
@@ -133,6 +139,6 @@ export function useUploadToS3(
     (event: React.ChangeEvent<HTMLInputElement>) => void,
     string | undefined,
     boolean,
-    Error | null
+    Error | null,
   ];
 }
