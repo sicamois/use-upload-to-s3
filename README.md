@@ -2,21 +2,19 @@
 
 A simple react hook `useUploadToS3` that levrage React Server Component to securely upload files to a private S3 bucket from the client while keeping the secret keys on the server.
 
+> [!WARNING]
+>
+> This hook uses React 19 Server Actions and thus will only work with **Next.js 15.**
+
 ## Installation
 
 ```bash
-npm i @sicamois/use-upload-to-s3
-```
-
-or if you want to sintall it from jsr.io
-
-```bash
-npx jsr add @sicamois/use-upload-to-s3
+pnpm add @sicamois/use-upload-to-s3
 ```
 
 ## Usage
 
-### Configure S3 Bucket
+### Configure S3 Bucket and IAM User
 
 - Create a private S3 bucket.
 - Create a new IAM user with the following policy:
@@ -28,36 +26,27 @@ npx jsr add @sicamois/use-upload-to-s3
     {
       "Effect": "Allow",
       "Action": ["s3:PutObject", "s3:GetObject"],
-      "Resource": "arn:aws:s3:::YOUR_BUCKET_NAME/*"
+      "Resource": ["arn:aws:s3:::YOUR_BUCKET_NAME/*"]
+    },
+    {
+      "Effect": "Allow",
+      "Action": ["s3:GetBucketCORS", "s3:PutBucketCORS"],
+      "Resource": ["arn:aws:s3:::YOUR_BUCKET_NAME"]
     }
   ]
 }
 ```
 
 - Save the `Access Key ID` and `Secret Access Key`.
-- In the S3 console, add the following CORS configuration to your bucket → go to the bucket, Permissions tab, CORS configuration:
-
-```json
-[
-  {
-    "AllowedHeaders": ["*"],
-    "AllowedMethods": ["PUT"],
-    "AllowedOrigins": ["*"],
-    "ExposeHeaders": [],
-    "MaxAgeSeconds": 3000
-  }
-]
-```
-
-> [!WARNING] > `"AllowedOrigins": ["*"]` is necessary if you don't know the origin of the request (like in this case). If you know the origin, you should replace `*` with the origin.
 
 ### Add Environment Variables
 
-- Create a `.env` file in the root of your project, with the following environment variables:
+- Create a `.env.local` file in the root of your project, with the following environment variables:
 
 ```env
 AWS_ACCESS_KEY_ID=<YOUR_ACCESS_KEY_ID>
 AWS_SECRET_ACCESS_KEY=<YOUR_SECRET_ACCESS_KEY>
+AWS_REGION=<YOUR_REGION>
 ```
 
 ### Quickstart
@@ -68,18 +57,16 @@ AWS_SECRET_ACCESS_KEY=<YOUR_SECRET_ACCESS_KEY>
 import { useUploadToS3 } from '@sicamois/use-upload-to-s3';
 
 export default function UploadFile() {
-  const [handleInputChange, s3key, isPending, error] = useUploadToS3(
-    'YOUR_BUCKET_NAME',
-    'YOUR_AWS_REGION'
-  );
+  const [handleInputChange, s3key, isPending, error] =
+    useUploadToS3('YOUR_BUCKET_NAME');
 
   return (
-    <form>
+    <div>
       <input type='file' onChange={handleInputChange} />
       <p>s3key: {s3key}</p>
       {isPending ? <p>Uploading...</p> : null}
       {error ? <p>Error: {error.message}</p> : null}
-    </form>
+    </div>
   );
 }
 ```
@@ -90,6 +77,29 @@ export default function UploadFile() {
 > - `s3key` is the key of the file in the S3 bucket (so you can get it later).
 > - `isPending` is a state that indicates if the file is being uploaded. As a state, it triggers a re-render when it changes.
 > - `error` is a state that contains the error message if something goes wrong. It is also a state to be more convient to handle.
+
+## Options
+
+### `accept`
+
+The file types to accept, defaults to all files.
+
+> [!NOTE]
+>
+> It accepts a string with the file MIME types (separated by a comma)
+
+### `sizeLimit`
+
+The maximum file size in bytes, defaults to 1MB.
+
+> [!NOTE]
+>
+> It accepts a string with the size in bytes, or a string with the size in KB, MB, GB, etc.
+
+> [!WARNING]
+> Server Actions have a default size limit of 1MB.  
+> To change that you have to set it in the next.config.js (or next.config.mjs) file.  
+> see https://nextjs.org/docs/app/api-reference/next-config-js/serverActions#bodysizelimit
 
 ## Motivations
 

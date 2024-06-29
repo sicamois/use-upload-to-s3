@@ -22,7 +22,6 @@ const generateUniqueFileName = (originalName: string): string => {
  * @param options Options for the upload
  * @param options.accept The file types to accept, defaults to all files
  * @param options.sizeLimit The maximum file size in bytes, defaults to 1MB
- * @param options.onUploadStart A function to be called when the upload starts
  * @param options.onUploadComplete A function to be called when the upload completes
  * @returns A tuple containing the file input change handler, the S3 key of the uploaded file, a boolean indicating if the upload is pending, and an error if the upload failed
 
@@ -46,14 +45,13 @@ export function useUploadToS3(
   options: {
     accept?: string;
     sizeLimit?: string;
-    onUploadStart?: () => void;
     onUploadComplete?: (s3key: string) => void;
   } = {}
 ): [
   (event: React.ChangeEvent<HTMLInputElement>) => void,
   string | undefined,
   boolean,
-  Error | null,
+  Error | null
 ] {
   const { accept = '*/*', sizeLimit = '1MB' } = options;
   const [error, setError] = useState<Error | null>(null);
@@ -109,9 +107,6 @@ export function useUploadToS3(
     startTransition(async () => {
       const key = generateUniqueFileName(file.name);
       try {
-        if (options.onUploadStart) {
-          options.onUploadStart();
-        }
         const uploadUrl = await getPutToS3PresignedUrlFromServer(key, bucket);
         const response = await fetch(uploadUrl, {
           method: 'PUT',
@@ -139,6 +134,6 @@ export function useUploadToS3(
     (event: React.ChangeEvent<HTMLInputElement>) => void,
     string | undefined,
     boolean,
-    Error | null,
+    Error | null
   ];
 }
